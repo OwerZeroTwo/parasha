@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notes</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+</head>
+<body>
+    <h1>Notes</h1>
+    <ul>
+        {% for note in notes %}
+            <li>
+                <h2>{{ note.title }}</h2>
+                <p>{{ note.content }}</p>
+                <form action="{{ url_for('delete_note', note_id=note.id) }}" method="post">
+                    <input type="hidden" name="note_id" value="{{ note.id }}">
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+    <form action="{{ url_for('create_note') }}" method="post">
+        <input type="text" name="title" placeholder="Title">
+        <textarea name="content" placeholder="Content"></textarea>
+        <button type="submit">Create note</button>
+    </form>
+</body>
+</html>

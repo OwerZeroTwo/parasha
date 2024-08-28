@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Note Taking App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <h1>Note Taking App</h1>
+    <div id="notes-list"></div>
+    <form id="add-note-form">
+        <input type="text" id="note-text" placeholder="Enter note text">
+        <button id="add-note-btn">Add Note</button>
+    </form>
+
+    <script>
+        const notesList = document.getElementById('notes-list');
+        const addNoteForm = document.getElementById('add-note-form');
+        const addNoteBtn = document.getElementById('add-note-btn');
+        const noteText = document.getElementById('note-text');
+
+        addNoteBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const note = { text: noteText.value };
+            const response = await fetch('/notes/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(note)
+            });
+            const result = await response.json();
+            console.log(result);
+            noteText.value = '';
+            getNotes();
+        });
+
+        async function getNotes() {
+            const response = await fetch('/notes/');
+            const notes = await response.json();
+            notesList.innerHTML = '';
+            notes.forEach((note) => {
+                const noteElement = document.createElement('div');
+                noteElement.textContent = note.text;
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.addEventListener('click', async () => {
+                    await fetch(`/notes/${note.id}`, { method: 'DELETE' });
+                    getNotes();
+                });
+                noteElement.appendChild(deleteBtn);
+                notesList.appendChild(noteElement);
+            });
+        }
+
+        getNotes();
+    </script>
+</body>
+</html>
